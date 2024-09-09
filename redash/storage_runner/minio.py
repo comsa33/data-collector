@@ -120,12 +120,7 @@ if __name__ == "__main__":
 
     # 실제 접속 정보를 입력합니다.
     config = {
-        "endpoint": "ruoserver.iptime.org:9000",
-        "access_key": "618ML6C7mQuLDKk5j75Z",
-        "secret_key": "uheRTajlzExTVvBNgNEP27yOMEZqmysWLAsr4jbK",
-        "bucket": "test",
-        "region": "ruo-server2",
-        "secure": False,
+
     }
 
     # MinioRunner 인스턴스를 생성합니다.
