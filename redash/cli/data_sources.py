@@ -10,10 +10,14 @@ from redash.query_runner import (
     get_configuration_schema_for_query_runner_type,
     query_runners,
 )
+from redash.storage_runner import storage_runners
 from redash.utils import json_loads
 from redash.utils.configuration import ConfigurationContainer
 
 manager = AppGroup(help="Data sources management commands.")
+
+# query_runners와 storage_runners 합치기
+all_runners = {**query_runners, **storage_runners}
 
 
 @manager.command(name="list")
@@ -39,18 +43,18 @@ def list_command(organization=None):
 
 @manager.command(name="list_types")
 def list_types():
-    print("Enabled Query Runners:")
-    types = sorted(query_runners.keys())
+    print("Enabled All Runners:")
+    types = sorted(all_runners.keys())
     for query_runner_type in types:
         print(query_runner_type)
     print("Total of {}.".format(len(types)))
 
 
 def validate_data_source_type(type):
-    if type not in query_runners.keys():
+    if type not in all_runners.keys():
         print(
             'Error: the type "{}" is not supported (supported types: {}).'.format(
-                type, ", ".join(query_runners.keys())
+                type, ", ".join(all_runners.keys())
             )
         )
         print("OJNK")
@@ -103,19 +107,19 @@ def new(name=None, type=None, options=None, organization="default"):
 
     if type is None:
         print("Select type:")
-        for i, query_runner_name in enumerate(query_runners.keys()):
-            print("{}. {}".format(i + 1, query_runner_name))
+        for i, runner_name in enumerate(all_runners.keys()):
+            print("{}. {}".format(i + 1, runner_name))
 
         idx = 0
-        while idx < 1 or idx > len(list(query_runners.keys())):
-            idx = click.prompt("[{}-{}]".format(1, len(query_runners.keys())), type=int)
+        while idx < 1 or idx > len(list(all_runners.keys())):
+            idx = click.prompt("[{}-{}]".format(1, len(all_runners.keys())), type=int)
 
-        type = list(query_runners.keys())[idx - 1]
+        type = list(all_runners.keys())[idx - 1]
     else:
         validate_data_source_type(type)
 
-    query_runner = query_runners[type]
-    schema = query_runner.configuration_schema()
+    runner_class = all_runners[type]
+    schema = runner_class.configuration_schema()
 
     if options is None:
         types = {"string": str, "number": int, "boolean": bool}

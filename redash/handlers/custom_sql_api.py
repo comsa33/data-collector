@@ -98,7 +98,7 @@ class PublicSQLExecutionResource(Resource):
             query_result_id = job.result
             query_result = models.QueryResult.query.get(query_result_id)
             if query_result:
-                return jsonify({"status": "success", "result": query_result.data}), 200
+                return jsonify({"status": "success", "result": query_result.data["rows"]}), 200
             else:
                 return self.error_response(self.error_messages["query_execution_failed"], 500)
 

@@ -142,9 +142,14 @@ class DataSourceListResource(BaseResource):
             abort(400)
 
         try:
-            datasource = models.DataSource.create_with_group(
-                org=self.current_org, name=req["name"], type=req["type"], options=config
-            )
+            if req.get("configurations"):
+                datasource = models.DataSource.create_with_group(
+                    org=self.current_org, name=req["name"], type=req["type"], options=config, configurations=req["configurations"]
+                )
+            else:
+                datasource = models.DataSource.create_with_group(
+                    org=self.current_org, name=req["name"], type=req["type"], options=config
+                )
 
             models.db.session.commit()
         except IntegrityError as e:
